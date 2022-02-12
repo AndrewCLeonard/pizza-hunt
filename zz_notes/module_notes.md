@@ -247,6 +247,33 @@ router
 
 ### 18.1.8: Test the API and Connect the Front-End Form
 
+add routes to insomnia
+
+-   for the `"_id"`, for `getOne`, `UPDATE` and `DELETE` copy one from one of the added pizzas
+
+when testing the `delete` route, run it twice because the first time will return the deleted data. The second should be empty.
+
+#### Add POST Functionality to the Front-End Form
+
+```
+fetch('/api/pizzas', {
+  method: 'POST',
+  headers: {
+    Accept: 'application/json',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify(formData)
+})
+  .then(response => response.json())
+  .then(postResponse => {
+    alert('Pizza created successfully!');
+    console.log(postResponse);
+  })
+  .catch(err => {
+    console.log(err);
+  });
+```
+
 ### 18.1.9: Reflection
 
 ## Lesson 2: Add Comments

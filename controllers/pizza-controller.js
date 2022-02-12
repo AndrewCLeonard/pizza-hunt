@@ -1,5 +1,5 @@
 const res = require("express/lib/response");
-const { Pizza } = require("../Models");
+const { Pizza } = require("../models");
 
 // ====================================================================================================
 // get all pizzas
