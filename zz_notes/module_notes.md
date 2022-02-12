@@ -116,10 +116,11 @@ could use MongoDB Node.js library, but Mongoose is an ODM, offering more feature
     ```
 
     bottom right before `app.listen()` method
-    -   `mongoose.connect()` tell s Mongoose which db we want to connect to
+
+    -   `mongoose.connect()` tells Mongoose which db we want to connect to
     -   if env var `MONGODB_URI` exists, it will use that (like Heroku)
     -   otherwise, use local MongoDB server's db
-    -   if db doesn't exist, it will create it. 
+    -   if db doesn't exist, it will create it.
 
     ```
 
@@ -133,16 +134,116 @@ could use MongoDB Node.js library, but Mongoose is an ODM, offering more feature
     ```
 
 ### 18.1.6: Create the Pizza Controller
+
 2 previous approaches:
+
 1. `routes` dir holds routes and endpoint functionality
 1. MVC pattern with routes and functionality in `controllers` dir
 
-Now, use a structure to completely separate routes and functionality: 
+Now, use a structure to completely separate routes and functionality:
+
 -   functionality in `controllers`
 -   endpoints in `routes`
 
+create `controllers` dir and `controllers/pizza-controller.js`, add routes
+
+-   get all pizzas GET
+-   get one pizza GET
+-   post a pizza POST
+-   update pizza PUT
+-   delete pizza DELETE
+
+js allows writing objects in two ways:
+
+```
+const dogObject = {
+  // this...
+  bark: function() {
+    console.log('Woof!');
+  },
+
+  // ... is the same as this
+  bark() {
+    console.log('Woof!');
+  }
+}
+```
+
+In MongoDB, methods for adding data to a collection are `.insertOne()` or `.insertMany()`. But in Mongoose, we use the `.create()` method, which will actually handle either one or multiple inserts.
+
+#### Create the Find Methods
 
 ### 18.1.7: Create the Pizza API Routes
+
+create `routes/api` and `routes/api/pizza-routes.js`
+
+-   combining HTTP route methods
+-   keeps route files cleaner, to the point because not writing out route functionality
+-   abstracts db methods from the routes, giving us the option to write unit tests with Jest
+
+```
+const router = require('express').Router();
+
+// Set up GET all and POST at /api/pizzas
+router
+  .route('/')
+  .get()
+  .post();
+
+// Set up GET one, PUT, and DELETE at /api/pizzas/:id
+router
+  .route('/:id')
+  .get()
+  .put()
+  .delete();
+
+module.exports = router;
+```
+
+#### Implement Controller Methods
+
+import functionality and hook it up with the routes:
+instead of importing entire object and doing `pizzaController.getAllPizza()`, destructure the method names out of the imported object and use them directly
+
+2nd line of `pizza-routes.js`
+
+```
+const {
+	getAllPizza, //
+	getPizzaById,
+	createPizza,
+	updatePizza,
+	deletePizza,
+} = require("../../controllers/pizza-controller");
+```
+
+implement them into the routes in `pizza-routes.js`
+
+update `/api/pizzas`:
+
+-   methods set up to accept `req` and `res` as parameters, so I can simply provide the name of the controller method as a callback.
+
+```
+// /api/pizzas
+router
+  .route('/')
+  .get(getAllPizza)
+  .post(createPizza);
+```
+
+```
+// /api/pizzas/:id
+router
+  .route('/:id')
+  .get(getPizzaById)
+  .put(updatePizza)
+  .delete(deletePizza);
+```
+
+#### Integrate API Routes into the Server
+
+-   create `api/index.js` to import all of API routes, prefix their endpoints, package them up
+-   file already imported and used in `server.js`, so no update needed there
 
 ### 18.1.8: Test the API and Connect the Front-End Form
 
@@ -166,7 +267,7 @@ Now, use a structure to completely separate routes and functionality:
 
 ### 18.2.8: Reflection
 
-##Lesson 3: Set Up Replies
+## Lesson 3: Set Up Replies
 
 ### 18.3.1: Introduction
 
