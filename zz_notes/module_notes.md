@@ -80,11 +80,67 @@ _create controller firnt in order to test functionality for testing routes_
 
 ### 18.1.3: Set Up the Project
 
+reviewing code, error in `add-pizza.html`. Closing div tag should move from line 184 --> 173!
+
 ### 18.1.4: Introducing MongoDB
+
+| SQL                      | NoSQL                           |
+| ------------------------ | ------------------------------- |
+| Table                    | Collection                      |
+| Row                      | Document                        |
+| Column                   | Field                           |
+| rigid structures         | unstructured data               |
+| few columns with queries | hundreds or thousands of fields |
+| fast response time       | large datasets                  |
+| consistent dataset size  | evolving data structure         |
+
+NoSQL db structure
+
+-   typically handled in application layer
+-   horizontally scalable on multiple servers
 
 ### 18.1.5: Install Mongoose and Create the Pizza Model
 
+could use MongoDB Node.js library, but Mongoose is an ODM, offering more features.
+
+-   create `models/Pizza.js`
+-   import dependencies
+-   create schema for pizza model given client specs
+-   create `models/index.js` to package up all the models
+-   Use `server.js` to set up Mongoose to connect when app is started.
+
+    // top of file:
+
+    ```
+    const mongoose = require('mongoose');
+    ```
+
+    bottom right before `app.listen()` method
+    -   `mongoose.connect()` tell s Mongoose which db we want to connect to
+    -   if env var `MONGODB_URI` exists, it will use that (like Heroku)
+    -   otherwise, use local MongoDB server's db
+    -   if db doesn't exist, it will create it. 
+
+    ```
+
+    mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/pizza-hunt", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    });
+    // log mongo queries being executed
+    mongoose.set("debug", true);
+
+    ```
+
 ### 18.1.6: Create the Pizza Controller
+2 previous approaches:
+1. `routes` dir holds routes and endpoint functionality
+1. MVC pattern with routes and functionality in `controllers` dir
+
+Now, use a structure to completely separate routes and functionality: 
+-   functionality in `controllers`
+-   endpoints in `routes`
+
 
 ### 18.1.7: Create the Pizza API Routes
 
