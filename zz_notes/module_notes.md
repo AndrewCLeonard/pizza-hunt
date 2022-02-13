@@ -436,9 +436,25 @@ removeComment({ params }, res) {
 
 -   `.findOneAndDelete()` works like `findOneAndUpdate()`- deletes document while returning its data
 -   take that data and use it to identify and remove it from the associated pizza using Mongo `$pull` operation
--   return the updated pizza data without the `_id` of teh comment in the `comments` array, and return it to the user. 
+-   return the updated pizza data without the `_id` of teh comment in the `comments` array, and return it to the user.
 
 ### 18.2.6: Create and Test the Routes
+
+set up `routes/api/comment-routes.js`
+
+-   require Express
+-   include destructured (?) objects from `controllers/comment-controller.js`, `addComment` and `removeComment`
+-   export the router module
+-   set up routes
+    -   `/api/comments/:pizzaId` with `addComment()` as a POST callback
+    -   `/api/comments/:pizzaId/:commentId` with `removeComment` method as a DELETE callback.
+-   export routes to `/routes/api/index.js` with prefix of `/comments`
+
+I want to see comments in JSON objects, not just MongoDB comment `_id`.
+
+-   chain `.populate()` method onto the query
+-   minus sign in `-__v` tells Mongo we don't want it returned
+-   Mongoose `sort()` method to return newest pizzas first: `.sort({ _id: -1 })` for descending order
 
 ### 18.2.7: Integrate with the Front End and Refactor
 

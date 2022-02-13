@@ -4,9 +4,15 @@ const { Pizza } = require("../models");
 // get all pizzas
 // ====================================================================================================
 const pizzaController = {
+	// Mongoose `find()` method similar to Sequelize `findAll()`
 	getAllPizza(req, res) {
-		// Mongoose `find()` method similar to Sequelize `findAll()`
 		Pizza.find({})
+			.populate({
+				path: "comments",
+				select: "-__v",
+			})
+			.select("-__v")
+			.sort({ _id: -1 })
 			.then((dbPizzaData) => res.json(dbPizzaData))
 			.catch((err) => {
 				console.log(err);
@@ -18,8 +24,12 @@ const pizzaController = {
 	// ====================================================================================================
 	getPizzaById({ params }, res) {
 		Pizza.findOne({ _id: params.id })
+			.populate({
+				path: "comments",
+				select: "-__v",
+			})
+			.select("-__v")
 			.then((dbPizzaData) => {
-				// if no pizza is found, send 404
 				if (!dbPizzaData) {
 					res.status(404).json({ message: "No pizza found with this id." });
 					return;
