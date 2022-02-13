@@ -317,6 +317,12 @@ each comment should have:
 
 ### 18.2.4: Associate the Pizza and Comments Models
 
+**Create db Connections**
+
+| Sequelize                                                     | Mongoose                                                 |
+| ------------------------------------------------------------- | -------------------------------------------------------- |
+| store a reference of the parent data's id with the child data | recommended to tell parent to keep track of its children |
+
 in `Pizza.js`
 
 -   add `comments` array field to the schema.
@@ -374,7 +380,63 @@ module.exports = { Pizza, Comment };
 
 ### 18.2.5: Create the Pizza Controller Methods
 
+-   create `controllers/comment-controller.js`
+-   import models
+-   create `commentController` object for adding and removing comments
 
+Mongo DB-based has functions like `$push` that start with a dollar sign so you know what's built in and what's not.
+
+```
+addComment({ params, body }, res) {
+  console.log(body);
+  Comment.create(body)
+    .then(({ _id }) => {
+      return Pizza.findOneAndUpdate(
+        { _id: params.pizzaId },
+        { $push: { comments: _id } },
+        { new: true }
+      );
+    })
+    .then(dbPizzaData => {
+      if (!dbPizzaData) {
+        res.status(404).json({ message: 'No pizza found with this id!' });
+        return;
+      }
+      res.json(dbPizzaData);
+    })
+    .catch(err => res.json(err));
+}
+```
+
+#### `removeComment()` method
+
+```
+removeComment({ params }, res) {
+  Comment.findOneAndDelete({ _id: params.commentId })
+    .then(deletedComment => {
+      if (!deletedComment) {
+        return res.status(404).json({ message: 'No comment with this id!' });
+      }
+      return Pizza.findOneAndUpdate(
+        { _id: params.pizzaId },
+        { $pull: { comments: params.commentId } },
+        { new: true }
+      );
+    })
+    .then(dbPizzaData => {
+      if (!dbPizzaData) {
+        res.status(404).json({ message: 'No pizza found with this id!' });
+        return;
+      }
+      res.json(dbPizzaData);
+    })
+    .catch(err => res.json(err));
+}
+```
+
+-   `.findOneAndDelete()` works like `findOneAndUpdate()`- deletes document while returning its data
+-   take that data and use it to identify and remove it from the associated pizza using Mongo `$pull` operation
+-   return the updated pizza data without the `_id` of teh comment in the `comments` array, and return it to the user. 
 
 ### 18.2.6: Create and Test the Routes
 
