@@ -276,17 +276,105 @@ fetch('/api/pizzas', {
 
 ### 18.1.9: Reflection
 
+-   Integrated the API code with the client’s existing codebase.
+-   Created a Pizza model using Mongoose.
+-   Used Mongoose’s middleware to automate functionality.
+-   Implemented Mongoose’s prebuilt methods for CRUD operations.
+-   Built a working front end to create a new pizza.
+
 ## Lesson 2: Add Comments
 
 ### 18.2.1: Introduction
 
+new functionality:
+
+-   Create a Mongoose model.
+-   Set up CRUD methods that use Mongoose models.
+-   Create a relationship between two models.
+
+learn how to:
+
+-   Interact with arrays in Mongoose.
+-   Work with subdocuments in Mongoose.
+-   Implement getters with Mongoose.
+
 ### 18.2.2: Preview
+
+-   build a comment section on pizza detail
+-   tie comments to their pizzas to reduce server requests
+    -   use Mongoose to create a relationsihp between two models
+-   enable user to comment on a pizza
 
 ### 18.2.3: Create the Comment Model
 
+-   new branch `feature/comment-model`
+
+each comment should have:
+
+1. `writtenBy`
+1. `commentBody`
+1. `createdAt`
+
 ### 18.2.4: Associate the Pizza and Comments Models
 
+in `Pizza.js`
+
+-   add `comments` array field to the schema.
+    -   tell Mongoose to expect an `ObjectId` and its data comes from `Comment` model
+    -   `ref: 'Comment'` tells `Pizza` model which documents to search to find the right comments
+-   **Virtuals** allow us to add more info to a db response so we don't have to add the info manually with a helper before responding to the API request.
+
+```
+const PizzaSchema = new Schema(
+  {
+    pizzaName: {
+      type: String
+    },
+    createdBy: {
+      type: String
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+    size: {
+      type: String,
+      default: 'Large'
+    },
+    toppings: [],
+    comments: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Comment'
+      }
+    ]
+  },
+  {
+    toJSON: {
+      virtuals: true,
+    },
+    id: false
+  }
+);
+
+// get total count of comments and replies on retrieval
+PizzaSchema.virtual('commentCount').get(function() {
+  return this.comments.length;
+});
+```
+
+import `Comment.js` model into `models/index.js` to package up both models:
+
+```
+const Pizza = require('./Pizza');
+const Comment = require('./Comment');
+
+module.exports = { Pizza, Comment };
+```
+
 ### 18.2.5: Create the Pizza Controller Methods
+
+
 
 ### 18.2.6: Create and Test the Routes
 
