@@ -458,7 +458,23 @@ I want to see comments in JSON objects, not just MongoDB comment `_id`.
 
 ### 18.2.7: Integrate with the Front End and Refactor
 
+- in `public/assets/js/pizza-list.js`
+  - add function to get all pizza data and transform into JSON. 
+  - call this function on bottob
+
+**getter** is a special type of function that takes the stored data to be retrieved and modify/format it upon return. "Middleware for data."
+
+use provided timestamp formatter as getter. 
+- add the key `get` to the field in the schema. 
+- tell Mongoose model to use all getter functions in model options `toJSON: {`...
+- don't forget to import the function into the schema at the top
+
 ### 18.2.8: Reflection
+
+-   Create a Comment model using Mongoose.
+-   Associate the Pizza and Comment models.
+-   Create CRUD functionality for creating a pizza.
+-   Get all pizza data from the API to display in the application’s front end.
 
 ## Lesson 3: Set Up Replies
 
