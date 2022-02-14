@@ -460,7 +460,7 @@ I want to see comments in JSON objects, not just MongoDB comment `_id`.
 
 - in `public/assets/js/pizza-list.js`
   - add function to get all pizza data and transform into JSON. 
-  - call this function on bottob
+  - call this function on bottom
 
 **getter** is a special type of function that takes the stored data to be retrieved and modify/format it upon return. "Middleware for data."
 
@@ -481,6 +481,19 @@ use provided timestamp formatter as getter.
 ### 18.3.1: Introduction
 
 ### 18.3.2: Preview
+
+1.  Set up front-end comment functionality. 
+1.  Create a Reply schema for comments.
+1.  Update the Comment controller and routes. 
+1.  Integrate reply functionality with the front end
+
+ Replies to a comment aren’t their own model, so we will create and remove them through their respective comments.
+
+because we recently finished up the functionality for comments, we should complete all that on the front end so we can see what’s needed for a comment’s replies.
+
+updating the Comment controller is going to lead right into creating routes. Neither of those tasks requires a lot of steps, so it’s best to keep them together.
+
+Replies will be nested documents for a comment, so we need to add more comment-oriented functionality for adding and removing replies from a comment.
 
 ### 18.3.3: Set Up Front-End Comment Functionality
 
