@@ -458,16 +458,17 @@ I want to see comments in JSON objects, not just MongoDB comment `_id`.
 
 ### 18.2.7: Integrate with the Front End and Refactor
 
-- in `public/assets/js/pizza-list.js`
-  - add function to get all pizza data and transform into JSON. 
-  - call this function on bottom
+-   in `public/assets/js/pizza-list.js`
+    -   add function to get all pizza data and transform into JSON.
+    -   call this function on bottom
 
 **getter** is a special type of function that takes the stored data to be retrieved and modify/format it upon return. "Middleware for data."
 
-use provided timestamp formatter as getter. 
-- add the key `get` to the field in the schema. 
-- tell Mongoose model to use all getter functions in model options `toJSON: {`...
-- don't forget to import the function into the schema at the top
+use provided timestamp formatter as getter.
+
+-   add the key `get` to the field in the schema.
+-   tell Mongoose model to use all getter functions in model options `toJSON: {`...
+-   don't forget to import the function into the schema at the top
 
 ### 18.2.8: Reflection
 
@@ -482,12 +483,12 @@ use provided timestamp formatter as getter.
 
 ### 18.3.2: Preview
 
-1.  Set up front-end comment functionality. 
+1.  Set up front-end comment functionality.
 1.  Create a Reply schema for comments.
-1.  Update the Comment controller and routes. 
+1.  Update the Comment controller and routes.
 1.  Integrate reply functionality with the front end
 
- Replies to a comment aren’t their own model, so we will create and remove them through their respective comments.
+Replies to a comment aren’t their own model, so we will create and remove them through their respective comments.
 
 because we recently finished up the functionality for comments, we should complete all that on the front end so we can see what’s needed for a comment’s replies.
 
@@ -497,7 +498,158 @@ Replies will be nested documents for a comment, so we need to add more comment-o
 
 ### 18.3.3: Set Up Front-End Comment Functionality
 
+set up `getPizza()` function in `single-pizza.js`
+
+-   error handling in case a user's pizza can't be found
+-   `.catch()` so any error takes user back to home page
+-   call function on bottom of file
+
+```
+function getPizza() {
+  // get id of pizza
+  const searchParams = new URLSearchParams(document.location.search.substring(1));
+  const pizzaId = searchParams.get('id');
+
+  // get pizzaInfo
+  fetch(`/api/pizzas/${pizzaId}`)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error({ message: 'Something went wrong!' });
+      }
+
+      return response.json();
+    })
+    .then(printPizza)
+    .catch(err => {
+      console.log(err);
+      alert('Cannot find a pizza with this id! Taking you back.');
+      window.history.back();
+    });
+}
+```
+
+-   add `fetch()` POST functionality for creatin ga new comment into the `handleNewCommentSubmit()` function
+
+```
+function handleNewCommentSubmit(event) {
+  event.preventDefault();
+
+  const commentBody = $newCommentForm.querySelector('#comment').value;
+  const writtenBy = $newCommentForm.querySelector('#written-by').value;
+
+  if (!commentBody || !writtenBy) {
+    return false;
+  }
+
+  const formData = { commentBody, writtenBy };
+
+  fetch(`/api/comments/${pizzaId}`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(formData)
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Something went wrong!');
+      }
+      response.json();
+    })
+    .then(commentResponse => {
+      console.log(commentResponse);
+      location.reload();
+    })
+    .catch(err => {
+      console.log(err);
+    });
+}
+```
+
 ### 18.3.4: Create the Comment Reply Schema
+
+Never need to query for just reply data = create replies as a subdocument array for comments.
+
+#### create `Reply` schema
+
+-   put it above `Comment` schema in `Comment.js`
+-   don't forget to update import statement at top of `Comment.js`
+-   needs a unique identifier (default `_id` field won't do)
+    -   add custom `replyId` field
+    -   it will generate the same type of `ObjectId()` value that the `_id` field typically generates
+
+```
+const ReplySchema = new Schema(
+  {
+    // set custom id to avoid confusion with parent comment _id
+    replyId: {
+      type: Schema.Types.ObjectId,
+      default: () => new Types.ObjectId()
+    },
+    replyBody: {
+      type: String
+    },
+    writtenBy: {
+      type: String
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+      get: createdAtVal => dateFormat(createdAtVal)
+    }
+  }
+);
+```
+
+#### associate replies with comments
+
+-   update `CommentSchema`
+    -   add `replies: [ReplySchema]` field
+    -   add getters and use `toJSON` for timestamp-related fields
+    -   require `dateFormat()` function on top `const dateFormat = require('../utils/dateFormat');`
+
+save point:
+Now add the toJSON field to BOTH schemas, as you did for the pizza's schema. After doing so, ReplySchema should look like the following code:
+
+#### add virtual for `CommentSchema` to get the total reply count
+
+-   add a virtual to get the total reply count
+
+#### update pizza's virtual `commentCount` so it includes replies as well
+
+-   `.reduce()` method to tally up the total of every comment with its replies
+    -   `accumulator`
+    -   `currentValue`
+
+#### `.reduce()` method example
+
+```
+const developers = [
+  {
+    name: "Eliza",
+    experience: 7,
+    role: "manager"
+  },
+  {
+    name: "Manuel",
+    experience: 2,
+    role: "developer"
+  },
+  {
+    name: "Kim",
+    experience: 5,
+    role: "developer"
+  }
+];
+
+function calculateAverage(total, years, index, array) {
+  total += years;
+  return index === array.length-1 ? total/array.length: total
+}
+
+const average = developers.map(dev => dev.experience).reduce(calculateAverage);
+```
 
 ### 18.3.5: Update the Comment Controller and Routes
 
