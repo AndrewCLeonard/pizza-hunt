@@ -24,9 +24,10 @@ function getPizza() {
 			console.log(response);
 			// check for a 4xx or 5xx error from server
 			if (!response.ok) {
-				console.log("hi");
-				throw new Error({ message: "Something went wrong!" });
+				console.log("request OK");
+				throw new Error({ message: "getPizza() went wrong!" });
 			}
+
 			return response.json();
 		})
 		.then(printPizza)
@@ -138,8 +139,14 @@ function handleNewCommentSubmit(event) {
 function handleNewReplySubmit(event) {
 	event.preventDefault();
 
-	const commentBody = $newCommentForm.querySelector("#comment").value;
-	const writtenBy = $newCommentform.querySelector("#written-by").value;
+	if (!event.target.matches(".reply-form")) {
+		return false;
+	}
+
+	const commentId = event.target.getAttribute("data-commentid");
+
+	const writtenBy = event.target.querySelector("[name=reply-name]").value;
+	const replyBody = event.target.querySelector("[name=reply]").value;
 
 	if (!replyBody || !writtenBy) {
 		return false;
@@ -157,7 +164,7 @@ function handleNewReplySubmit(event) {
 	})
 		.then((response) => {
 			if (!response.ok) {
-				throw new Error({ message: "Something went wrong!" });
+				throw new Error("Something went wrong!");
 			}
 			response.json();
 		})
