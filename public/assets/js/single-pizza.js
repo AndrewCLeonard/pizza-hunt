@@ -1,6 +1,6 @@
 // my file
-// const { response } = require("express");
-// const { json } = require("express/lib/response");
+const { response } = require("express");
+const { json } = require("express/lib/response");
 
 const $backBtn = document.querySelector("#back-btn");
 const $pizzaName = document.querySelector("#pizza-name");
@@ -123,7 +123,7 @@ function handleNewCommentSubmit(event) {
 	})
 		.then((response) => {
 			if (!response.ok) {
-				throw new Error("Something went wrong!");
+				throw new Error("Something went wrong! 126");
 			}
 			response.json();
 		})
@@ -164,7 +164,7 @@ function handleNewReplySubmit(event) {
 	})
 		.then((response) => {
 			if (!response.ok) {
-				throw new Error("Something went wrong!");
+				throw new Error("Something went wrong! 167");
 			}
 			response.json();
 		})

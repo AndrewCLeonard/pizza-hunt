@@ -10,6 +10,12 @@ NoSQL
 -   Mongoose as Object-Document Mapper (ODM)
 -   1st step to Progressive Web Application (PWA) using IndexedDB as a NoSQL client-side storage API in browser instead of cookies
 
+## Tutorials
+
+-   https://coding-boot-camp.github.io/full-stack/mongodb/how-to-install-mongodb
+-   https://coding-boot-camp.github.io/full-stack/mongodb/how-to-set-up-mongodb-atlas
+-   https://coding-boot-camp.github.io/full-stack/mongodb/deploy-with-heroku-and-mongodb-atlas
+
 ### 18.0.2 Roadmap
 
 Necessary Skills:
@@ -77,6 +83,8 @@ _create controller firnt in order to test functionality for testing routes_
 1.  Create the Pizza controller.
 1.  Create Pizza API routes.
 1.  Test API and connect the front-end form.
+
+_could create routes first and hope that we have an understanding of what our functionality will eventually be, but it’s usually easier to determine the functionality before establishing the routes that carry that out._
 
 ### 18.1.3: Set Up the Project
 
@@ -653,7 +661,32 @@ const average = developers.map(dev => dev.experience).reduce(calculateAverage);
 
 ### 18.3.5: Update the Comment Controller and Routes
 
+_create and remove replies_
+
+create `addReply()` method after `addComment()`
+
+```
+	// add reply to comment
+	addReply({ params, body }, res) {
+		console.log(params.commentId)
+		console.log(body)
+		Comment.findOneAndUpdate({ _id: params.commentId }, { $addToSet: { replies: body } }, { new: true })
+			.then((dbPizzaData) => {
+				if (!dbPizzaData) {
+					res.status(404).json({ message: "No pizza found with this id!" });
+					return;
+				}
+				res.json(dbPizzaData);
+			})
+			.catch((err) => res.json(err));
+	},
+```
+
+???
+
 ### 18.3.6: Integrate Reply Functionality with the Front End
+
+???
 
 ### 18.3.7: Reflection
 
@@ -661,13 +694,42 @@ const average = developers.map(dev => dev.experience).reduce(calculateAverage);
 
 ### 18.4.1: Introduction
 
+Add IndexedDB functionality to locally save the created pizzas whenever the app is offline. Data sent when internet connectivity reestablished.
+
 ### 18.4.2: Preview
+
+1. Introduce IndexedDB.
+1. Create the IndexedDB connection.
+1. Test the IndexedDB functionality.
+1. Upload the pizza data.
+1. Save pizza data to IndexedDB.
 
 ### 18.4.3: Introducing IndexedDB
 
+IndexedBD is a Web API
+
+|                        | **localStorage (Client-Side Storage)**                                               | **IndexedDB**                                                                                                                                                                       |
+| ---------------------- | ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Examples               | <ul><li>cookies</li><li>localStorage</li><li>sessionStorage</li>                     |                                                                                                                                                                                     |
+| Data Types             | data in strings stored as key-value pairs                                            | also a key-value store, but neither key nor value required to be a string- you can use: <ul><li>strings</li><li>numbers</li><li>dates</li><li>lists</li><li>other objects</li></ul> |
+| Data Storage/Retrieval | need to convert to strings before storage, and convert back to objects for retrieval | no type conversion required                                                                                                                                                         |
+| Processing             | syncronous (have to wait for data retrieval)                                         | asyscronous                                                                                                                                                                         |
+| data location          |                                                                                      | lives on client                                                                                                                                                                     |
+| operations             |                                                                                      | done within a (CRUD) transaction                                                                                                                                                    |
+
 ### 18.4.4: Create the IndexedDB Connection
 
+| database system | name where data held | Description |
+| --------------- | -------------------- | ----------- |
+| indexedDB       | **object store**     |             |
+| SQL             | tables               |
+| MongoDB         | collections          |
+
 ### 18.4.5: Save Pizza Data to IndexedDB
+
+Now that connection to IndexedBD is set up and created structure for storing data in it.
+Now, _functionality for writing data to it._
+**transaction** = temporary connection to database
 
 ### 18.4.6: Test the IndexedDB Functionality
 
@@ -679,13 +741,47 @@ const average = developers.map(dev => dev.experience).reduce(calculateAverage);
 
 ### 18.5.1: Introduction
 
+-   Add validation to the Pizza model.
+-   Add validation to the Comment model and Reply schema.
+-   Deploy the application to Heroku.
+
 ### 18.5.2: Preview
 
+validation in place means unable to post if data is incorrect or missing
+
 ### 18.5.3: Add Validation to the Pizza Model
+
+prevent someone from using DevTools to manipulate pizza data:
+
+```
+size: {
+  type: String,
+  required: true,
+  enum: ['Personal', 'Small', 'Medium', 'Large', 'Extra Large'],
+  default: 'Large'
+},
+```
+
+`enum` = **enumberable** = set of data that can be iterated over
+
+For custom error message with `enum`, need to use `validate` option to create custom function
+
+#### Update the Pizza Controller to Run Validators
+
+Run validators when either new pizza data created _or_ pizza is updated.
 
 ### 18.5.4: Add Validation to the Comment Model and Reply Schema
 
 ### 18.5.5: Deploy to Heroku
+
+JawsDB only works with MySQL
+**MongoDB Atlas**
+
+-   cloud-based database service created and maintained by MongoDB
+-   works with hosting services (AWS, Azure, Google Cloud) to help users provision, maintain, secure new databases for their applications
+
+#### Set Up the Environment Variable in Heroku
+
 
 ### 18.5.6: Reflection Weekly Challenge 18. NoSQL Challenge: Social Network API
 

@@ -28,7 +28,7 @@ const handleAddTopping = (event) => {
 
 	const divWrapper = document.createElement("div");
 
-  // 
+	//
 	divWrapper.appendChild(checkbox);
 	divWrapper.appendChild(label);
 	// ??? read MDN about console, `typeof`, and `console.dir`
@@ -46,7 +46,7 @@ const handlePizzaSubmit = (event) => {
 	const pizzaName = $pizzaForm.querySelector("#pizza-name").value;
 	const createdBy = $pizzaForm.querySelector("#created-by").value;
 	const size = $pizzaForm.querySelector("#pizza-size").value;
-  // 
+	//
 	const toppings = [...$pizzaForm.querySelectorAll("[name=topping]:checked")].map((topping) => {
 		return topping.value;
 	});
@@ -72,6 +72,7 @@ const handlePizzaSubmit = (event) => {
 		})
 		.catch((err) => {
 			console.log(err);
+			saveRecord(formData);
 		});
 };
 
